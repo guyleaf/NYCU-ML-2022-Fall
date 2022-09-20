@@ -1,0 +1,10 @@
+{
+    "files.eol": "\n",
+    "files.associations": {
+        "*.strings": "plist",
+        "iostream": "cpp",
+        "iosfwd": "cpp",
+        "istream": "cpp",
+        "vector": "cpp"
+    }
+}
