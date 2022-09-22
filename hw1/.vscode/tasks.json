@@ -2,14 +2,21 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: g++ 建置使用中檔案",
+            "label": "C/C++: 建置檔案 (Debug)",
             "command": "g++",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}/${fileBasenameNoExtension}.o",
+                "-std=c++14",
+                "-Wall",
+                "-Wextra",
+                "-Wno-deprecated-declarations",
+                "-pedantic-errors",
+                "-m64",
+                "-fsanitize=address"
             ],
             "options": {
                 "cwd": "${fileDirname}"
@@ -20,8 +27,7 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
-            },
-            "detail": "偵錯工具產生的工作。"
+            }
         }
     ],
     "version": "2.0.0"
