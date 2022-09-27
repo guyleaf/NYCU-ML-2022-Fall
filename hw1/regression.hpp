@@ -3,12 +3,12 @@
 
 namespace regression
 {
-    utils::Vectord fitPointsByLSE(utils::Matrix2d points, int numberOfBases, double lambda)
+    utils::Vectord fitPointsByrLSE(utils::Matrix2d points, int numberOfBases, double lambda)
     {
         return {};
     }
 
-    utils::Vectord fitPointsByNewtonMethod(utils::Matrix2d points, int numberOfBases)
+    utils::Vectord fitPointsByNewtonMethodWithLSE(utils::Matrix2d points, int numberOfBases)
     {
         return {};
     }
