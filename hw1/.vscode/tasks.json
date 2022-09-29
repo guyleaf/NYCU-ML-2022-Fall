@@ -1,32 +1,33 @@
 {
     "tasks": [
         {
-            "type": "cppbuild",
+            "type": "shell",
             "label": "C/C++: 建置檔案 (Debug)",
-            "command": "g++",
+            "command": "make",
             "args": [
-                "-fdiagnostics-color=always",
-                "-g",
-                "${file}",
-                "-o",
-                "${fileDirname}/${fileBasenameNoExtension}.o",
-                "-std=c++14",
-                "-Wall",
-                "-Wextra",
-                "-Wno-deprecated-declarations",
-                "-pedantic-errors",
-                "-m64",
-                "-fsanitize=address"
+                "debug"
             ],
-            "options": {
-                "cwd": "${fileDirname}"
-            },
             "problemMatcher": [
                 "$gcc"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "C/C++: 建置檔案 (Release)",
+            "command": "make",
+            "args": [
+                "all"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
             }
         }
     ],

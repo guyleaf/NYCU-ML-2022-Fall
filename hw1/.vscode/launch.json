@@ -8,14 +8,14 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${cwd}/${fileBasenameNoExtension}.o",
+            "program": "${cwd}/main.out",
             "args": [
                 "${cwd}/sample.txt",
                 "3",
                 "0.001"
             ],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": ".",
             "environment": [
                 {
                     "name": "ASAN_OPTIONS",

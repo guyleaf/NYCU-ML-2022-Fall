@@ -1,11 +1,21 @@
-﻿#include <iostream>
+﻿#include "algebra/algebra.hpp"
+#include "utils.h"
+
+#include <iostream>
 
 #include <string>
 #include <stdexcept>
+#include <cstddef>
 
-#include "regression.hpp"
-#include "utils.hpp"
+utils::Vectord fitPointsByrLSE(utils::Matrixd points, int numberOfBases, double lambda)
+{
+    return {};
+}
 
+utils::Vectord fitPointsByNewtonMethodWithLSE(utils::Matrixd points, int numberOfBases)
+{
+    return {};
+}
 
 int main(int argc, char *argv[])
 {
@@ -23,10 +33,14 @@ int main(int argc, char *argv[])
     }
 
     std::string filePath(argv[1]);
-    int numberOfbases = std::stoi(argv[2]);
-    double lambda = std::stof(argv[3]);
+    auto numberOfbases = utils::strto<std::size_t>(argv[2]);
+    auto lambda = utils::strto<double>(argv[3]);
 
     auto points = utils::getData(filePath);
+
+    algebra::Matrix2d<double> a(3, 5, 0.2), b(4, 5, 0.1);
+
+    a += b;
 
     return 0;
 }
