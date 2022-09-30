@@ -38,9 +38,21 @@ int main(int argc, char *argv[])
 
     auto points = utils::getData(filePath);
 
-    algebra::Matrix2d<double> a(3, 5, 0.2), b(4, 5, 0.1);
+    algebra::Matrix2d<double> a(4, 5, 0.2), b(5, 4, 0.1);
 
-    a += b;
+    a *= b;
 
+    algebra::Matrix2d<double> c(4, 4, 0.1);
+    auto i = algebra::eye<double>(4);
+    auto j = algebra::eye<double>(5);
+    c -= 1;
+
+    std::cout << (i != j) << std::endl;
+    utils::printMatrix(std::cout, i);
+    utils::printMatrix(std::cout, c + i);
+    utils::printMatrix(std::cout, c + 1);
+    utils::printMatrix(std::cout, c - 1);
+    utils::printMatrix(std::cout, c * 2);
+    utils::printMatrix(std::cout, c / 2);
     return 0;
 }

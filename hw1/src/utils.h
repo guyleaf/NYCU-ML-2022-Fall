@@ -9,6 +9,7 @@
 #include <cctype>
 #include <cstddef>
 
+#include "algebra/algebra.hpp"
 
 namespace utils
 {
@@ -19,6 +20,9 @@ namespace utils
 
     template <typename T>
     T strto(char *value);
+
+    template <typename T>
+    void printMatrix(std::ostream &os, const algebra::Matrix2d<T> &data);
 
     Matrixd getData(const std::string path);
     Matrixd generateDesignMatrix(const Matrixd &points, const std::size_t numberOfBases);

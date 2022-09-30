@@ -1,7 +1,10 @@
 ﻿#include "utils.h"
 
+#include <ostream>
 #include <fstream>
 #include <sstream>
+#include <iterator>
+#include <algorithm>
 #include <stdexcept>
 
 #include <cstddef>
@@ -21,9 +24,6 @@ namespace utils
         return state;
     }
 
-    template std::size_t strto<std::size_t>(char*);
-    template double strto<double>(char*);
-
     template <typename T>
     T strto(char *value)
     {
@@ -34,6 +34,19 @@ namespace utils
 
         return target;
     }
+    template std::size_t strto<std::size_t>(char *);
+    template double strto<double>(char *);
+
+    template <typename T>
+    void printMatrix(std::ostream &os, const algebra::Matrix2d<T> &matrix)
+    {
+        for (const T &value : matrix)
+        {
+            os << value << " ";
+        }
+        os << std::endl;
+    }
+    template void printMatrix<double>(std::ostream &, const algebra::Matrix2d<double> &);
 
     Matrixd getData(const std::string path)
     {
