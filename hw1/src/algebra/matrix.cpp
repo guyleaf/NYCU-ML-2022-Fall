@@ -10,6 +10,7 @@ namespace algebra
     const std::string ZERO_SIZE_MSG = "Invalid rows and cols value.";
     const std::string NOT_SAME_SIZE_MSG = "The size of two matrices are not equal.";
     const std::string NOT_MULTIPLIABLE_MSG = "The size of cols of the first matrix is not equal to the size of rows of the second matrix.";
+    const std::string NOT_SQUARE_MSG = "The matrix is not a square matrix.";
 
     // define constructors
     template <typename T>
@@ -87,12 +88,53 @@ namespace algebra
     template <typename T>
     Matrix2d<T> Matrix2d<T>::inverse() const
     {
-        Matrix2d<T> result(this->_cols, this->_rows);
-        // for (std::size_t i = 0; i < result._rows; i++)
+        if (this->_rows != this->_cols)
+        {
+            throw std::runtime_error(NOT_SQUARE_MSG);
+        }
+
+        const std::size_t n = this->_rows;
+        std::valarray<T> lu(n * n);
+        T sum = 0;
+        for (std::size_t i = 0; i < n; i++)
+        {
+            for (std::size_t j = i; j < n; j++)
+            {
+                sum = 0;
+                for (std::size_t k = 0; k < i; k++)
+                    sum += lu[i * n + k] * lu[k * n + j];
+                lu[i * n + j] = this->_data[i * n + j] - sum;
+            }
+            for (std::size_t j = i + 1; j < n; j++)
+            {
+                sum = 0;
+                for (std::size_t k = 0; k < i; k++)
+                    sum += lu[j * n + k] * lu[k * n + i];
+                lu[j * n + i] = (1 / lu[i * n + i]) * (this->_data[j * n + i] - sum);
+            }
+        }
+
+        // lu = L+U-I
+        // find solution of Ly = b
+        double[] y = new double[n];
+        for (int i = 0; i < n; i++)
+        {
+            sum = 0;
+            for (int k = 0; k < i; k++)
+                sum += lu[i, k] * y[k];
+            y[i] = rightPart[i] - sum;
+        }
+        // // find solution of Ux = y
+        // double[] x = new double[n];
+        // for (int i = n - 1; i >= 0; i--)
         // {
-        //     result[i] = this->col(i);
+        //     sum = 0;
+        //     for (int k = i + 1; k < n; k++)
+        //         sum += lu[i, k] * x[k];
+        //     x[i] = (1 / lu[i, i]) * (y[i] - sum);
         // }
-        return result;
+
+        return;
     }
 
     // define operators
@@ -205,37 +247,6 @@ namespace algebra
     {
         return !(*this == rhs);
     }
-
-    #undef DEFINE_BINARY_OPERATOR
-    #define DEFINE_BINARY_OPERATOR(_Op)  \
-        template <typename T>   \
-        Matrix2d<T> operator _Op(const Matrix2d<T> &lhs, const Matrix2d<T> &rhs)    \
-        {   \
-            Matrix2d<T> result(lhs);    \
-            result _Op##= rhs;  \
-            return result;  \
-        }   \
-            \
-        template <typename T>   \
-        Matrix2d<T> operator _Op(const typename Matrix2d<T>::value_type &lhs, const Matrix2d<T> &rhs)   \
-        {   \
-            Matrix2d<T> result(rhs);    \
-            result _Op##= lhs;  \
-            return result;  \
-        }   \
-            \
-        template <typename T>   \
-        Matrix2d<T> operator _Op(const Matrix2d<T> &lhs, const typename Matrix2d<T>::value_type &rhs)   \
-        {   \
-            Matrix2d<T> result(lhs);    \
-            result _Op##= rhs;  \
-            return result;  \
-        }
-
-    DEFINE_BINARY_OPERATOR(+)
-    DEFINE_BINARY_OPERATOR(-)
-    DEFINE_BINARY_OPERATOR(*)
-    DEFINE_BINARY_OPERATOR(/)
 
     template class Matrix2d<double>;
 }

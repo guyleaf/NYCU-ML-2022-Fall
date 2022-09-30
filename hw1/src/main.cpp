@@ -38,9 +38,9 @@ int main(int argc, char *argv[])
 
     auto points = utils::getData(filePath);
 
-    algebra::Matrix2d<double> a(4, 5, 0.2), b(5, 4, 0.1);
+    algebra::Matrix2d<double> a(4, 5, 0.2), b(4, 5, 0.1);
 
-    a *= b;
+    a *= b.transpose();
 
     algebra::Matrix2d<double> c(4, 4, 0.1);
     auto i = algebra::eye<double>(4);

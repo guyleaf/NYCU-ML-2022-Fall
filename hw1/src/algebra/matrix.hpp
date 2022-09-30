@@ -53,8 +53,9 @@ namespace algebra
         // retrieve refernce to the data from col c of the matrix2d
         std::slice_array<value_type> col(std::size_t c);
 
-        // genetate a new matrix2d that is the transposition of this one
         // TODO: Support the view of matrix
+
+        // genetate a new matrix2d that is the transposition of this one
         Matrix2d<value_type> transpose() const;
         Matrix2d<value_type> inverse() const;
 
@@ -114,15 +115,30 @@ namespace algebra
     // https://www.cppstories.com/2016/02/notes-on-c-sfinae/
 
     // ##: https://ithelp.ithome.com.tw/articles/10207697
-    #define DEFINE_BINARY_OPERATOR(_Op)  \
-        template <typename T>   \
-        inline Matrix2d<T> operator _Op(const Matrix2d<T> &lhs, const Matrix2d<T> &rhs);    \
-            \
-        template <typename T>   \
-        Matrix2d<T> operator _Op(const typename Matrix2d<T>::value_type &lhs, const Matrix2d<T> &rhs);   \
-            \
-        template <typename T>   \
-        Matrix2d<T> operator _Op(const Matrix2d<T> &lhs, const typename Matrix2d<T>::value_type &rhs);
+#define DEFINE_BINARY_OPERATOR(_Op)  \
+    template <typename T>   \
+    inline Matrix2d<T> operator _Op(const Matrix2d<T> &lhs, const Matrix2d<T> &rhs)    \
+    {   \
+        Matrix2d<T> result(lhs);    \
+        result _Op##= rhs;  \
+        return result;  \
+    }   \
+        \
+    template <typename T>   \
+    inline Matrix2d<T> operator _Op(const typename Matrix2d<T>::value_type &lhs, const Matrix2d<T> &rhs)   \
+    {   \
+        Matrix2d<T> result(rhs);    \
+        result _Op##= lhs;  \
+        return result;  \
+    }   \
+        \
+    template <typename T>   \
+    inline Matrix2d<T> operator _Op(const Matrix2d<T> &lhs, const typename Matrix2d<T>::value_type &rhs)   \
+    {   \
+        Matrix2d<T> result(lhs);    \
+        result _Op##= rhs;  \
+        return result;  \
+    }
 
     DEFINE_BINARY_OPERATOR(+)
     DEFINE_BINARY_OPERATOR(-)
@@ -130,4 +146,5 @@ namespace algebra
     DEFINE_BINARY_OPERATOR(/)
 } // namespace algebra
 
+#undef DEFINE_BINARY_OPERATOR
 #endif // MATRIX2D_H_
