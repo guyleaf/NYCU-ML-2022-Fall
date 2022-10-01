@@ -128,7 +128,7 @@ namespace algebra
             std::valarray<T> upTriangleRow = u._data[std::slice(i * n + i, n - i, 1)];
             for (std::size_t j = i + 1; j < n; j++)
             {
-                l(j, i) = u(j, i) / u(i, i);
+                l(j, i) = u(j, i) * (1 / u(i, i));
                 u._data[std::slice(j * n + i, n - i, 1)] -= l(j, i) * upTriangleRow;
             }
         }
@@ -148,7 +148,7 @@ namespace algebra
         for (std::size_t i = n; i > 0; i--)
         {
             auto realI = i - 1;
-            b.row(realI) /= std::valarray<T>(u(realI, realI), n);
+            b.row(realI) *= std::valarray<T>(1 / u(realI, realI), n);
             std::valarray<T> bRow = b.row(realI);
             for (std::size_t j = i - 1; j > 0; j--)
             {
@@ -254,7 +254,7 @@ namespace algebra
     template <typename T>
     Matrix2d<T> &Matrix2d<T>::operator/=(const T &rhs)
     {
-        this->_data /= rhs;
+        this->_data *= (1 / rhs);
         return *this;
     }
 
