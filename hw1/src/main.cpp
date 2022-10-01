@@ -42,10 +42,13 @@ int main(int argc, char *argv[])
 
     a *= b.transpose();
 
-    algebra::Matrix2d<double> c(4, 4, 0.1);
-    auto i = algebra::eye<double>(4);
+    algebra::Matrix2d<double> c(3, 3, {
+        -2, 2, -1,
+        6, -6, 7,
+        3, -8, 4
+    });
+    auto i = algebra::eye<double>(3);
     auto j = algebra::eye<double>(5);
-    c -= 1;
 
     std::cout << (i != j) << std::endl;
     utils::printMatrix(std::cout, i);
@@ -54,5 +57,6 @@ int main(int argc, char *argv[])
     utils::printMatrix(std::cout, c - 1);
     utils::printMatrix(std::cout, c * 2);
     utils::printMatrix(std::cout, c / 2);
+    utils::printMatrix(std::cout, c * c.inverse());
     return 0;
 }

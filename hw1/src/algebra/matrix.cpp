@@ -1,12 +1,17 @@
 ﻿#include "matrix.hpp"
+#include "algebra.hpp"
+#include "../utils.h"
 
+#include <iostream>
 #include <string>
 #include <cassert>
+#include <cmath>
 #include <stdexcept>
 
 namespace algebra
 {
-    const std::string NOT_DIVISIBLE_SIZE_MSG = "The size of data is not divisible by rows.";
+    const std::string NOT_DIVISIBLE_SIZE_MSG = "The size of array is not divisible by rows.";
+    const std::string INVALID_SIZE_MSG = "The value rows * cols is not equal to the size of array.";
     const std::string ZERO_SIZE_MSG = "Invalid rows and cols value.";
     const std::string NOT_SAME_SIZE_MSG = "The size of two matrices are not equal.";
     const std::string NOT_MULTIPLIABLE_MSG = "The size of cols of the first matrix is not equal to the size of rows of the second matrix.";
@@ -27,7 +32,7 @@ namespace algebra
     {
         if ((_rows * _cols) != _data.size())
         {
-            throw std::runtime_error(NOT_DIVISIBLE_SIZE_MSG);
+            throw std::runtime_error(INVALID_SIZE_MSG);
         }
     }
 
@@ -93,48 +98,65 @@ namespace algebra
             throw std::runtime_error(NOT_SQUARE_MSG);
         }
 
-        const std::size_t n = this->_rows;
-        std::valarray<T> lu(n * n);
-        T sum = 0;
+        std::size_t n = this->_rows;
+        Matrix2d<T> b = eye<T>(n);
+        Matrix2d<T> l = zeros<T>(n);
+        Matrix2d<T> u = Matrix2d<T>(*this);
+
+        // i = current pivot
         for (std::size_t i = 0; i < n; i++)
         {
-            for (std::size_t j = i; j < n; j++)
-            {
-                sum = 0;
-                for (std::size_t k = 0; k < i; k++)
-                    sum += lu[i * n + k] * lu[k * n + j];
-                lu[i * n + j] = this->_data[i * n + j] - sum;
-            }
+            // find pivot
+            std::size_t maxI = i;
+            T maxPivot = u(maxI, i);
             for (std::size_t j = i + 1; j < n; j++)
             {
-                sum = 0;
-                for (std::size_t k = 0; k < i; k++)
-                    sum += lu[j * n + k] * lu[k * n + i];
-                lu[j * n + i] = (1 / lu[i * n + i]) * (this->_data[j * n + i] - sum);
+                T &&absPivot = std::abs((*this)(j, i));
+                if (maxPivot < absPivot)
+                {
+                    maxPivot = absPivot;
+                    maxI = j;
+                }
+            }
+
+            // interchange rows
+            swapRows(l, i, maxI);
+            swapRows(u, i, maxI);
+            swapRows(b, i, maxI);
+
+            // TODO: Support matrix slicing
+            std::valarray<T> upTriangleRow = u._data[std::slice(i * n + i, n - i, 1)];
+            for (std::size_t j = i + 1; j < n; j++)
+            {
+                l(j, i) = u(j, i) / u(i, i);
+                u._data[std::slice(j * n + i, n - i, 1)] -= l(j, i) * upTriangleRow;
             }
         }
 
-        // lu = L+U-I
-        // find solution of Ly = b
-        double[] y = new double[n];
-        for (int i = 0; i < n; i++)
+        // LUx = b
+        // Ly = b
+        for (std::size_t i = 0; i < n; i++)
         {
-            sum = 0;
-            for (int k = 0; k < i; k++)
-                sum += lu[i, k] * y[k];
-            y[i] = rightPart[i] - sum;
+            std::valarray<T> bRow = b.row(i);
+            for (std::size_t j = i + 1; j < n; j++)
+            {
+                b.row(j) -= l(j, i) * bRow;
+            }
         }
-        // // find solution of Ux = y
-        // double[] x = new double[n];
-        // for (int i = n - 1; i >= 0; i--)
-        // {
-        //     sum = 0;
-        //     for (int k = i + 1; k < n; k++)
-        //         sum += lu[i, k] * x[k];
-        //     x[i] = (1 / lu[i, i]) * (y[i] - sum);
-        // }
 
-        return;
+        // Ux = y
+        for (std::size_t i = n; i > 0; i--)
+        {
+            auto realI = i - 1;
+            b.row(realI) /= std::valarray<T>(u(realI, realI), n);
+            std::valarray<T> bRow = b.row(realI);
+            for (std::size_t j = i - 1; j > 0; j--)
+            {
+                auto realJ = j - 1;
+                b.row(realJ) -= u(realJ, realI) * bRow;
+            }
+        }
+        return b;
     }
 
     // define operators

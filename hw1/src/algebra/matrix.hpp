@@ -4,6 +4,7 @@
 
 #include <valarray>
 #include <iterator>
+#include <utility>
 #include <cstddef>
 
 namespace algebra
@@ -15,6 +16,7 @@ namespace algebra
         using value_type = T;
 
         Matrix2d() = delete;
+        // Matrix2d(std::initializer_list<value_type>);
         // creates based on the rows and data size
         explicit Matrix2d(std::size_t rows, const std::valarray<T> &data);
         // creates based on the rows and cols directly
