@@ -1,4 +1,4 @@
-standard = c++14
+standard = c++17
 SUB_FOLDERS = algebra
 TARGET = main.out
 
@@ -11,7 +11,7 @@ CXX = g++
 
 # flags
 DEBUG_LEVEL = -g
-CXXFLAGS = -std=$(standard) -Wall -Wextra -Wno-deprecated-declarations -pedantic-errors -m64
+CXXFLAGS = -std=$(standard) -Wall -Wextra -Wno-deprecated-declarations -pedantic-errors -m64 -lboost_iostreams -lboost_system -lboost_filesystem
 
 # others
 SRCS = $(wildcard $(SRC_FOLDER)/*.cpp $(foreach fd, $(SUB_FOLDERS), $(SRC_FOLDER)/$(fd)/*.cpp))
@@ -32,4 +32,4 @@ $(OBJ_FOLDER)/%.o: $(SRC_FOLDER)/%.cpp
 
 .PHONY: clean
 clean:
-	rm -rf $(OBJ_FOLDER)
+	rm -rf $(OBJ_FOLDER) $(TARGET)

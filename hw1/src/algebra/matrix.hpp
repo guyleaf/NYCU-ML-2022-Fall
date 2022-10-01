@@ -2,6 +2,7 @@
 #ifndef MATRIX2D_H_
 #define MATRIX2D_H_
 
+#include <vector>
 #include <valarray>
 #include <iterator>
 #include <utility>
@@ -21,6 +22,10 @@ namespace algebra
         explicit Matrix2d(std::size_t rows, const std::valarray<T> &data);
         // creates based on the rows and cols directly
         explicit Matrix2d(std::size_t rows, std::size_t cols, const std::valarray<T> &data);
+        // creates based on the rows and data size
+        explicit Matrix2d(std::size_t rows, const std::vector<T> &data);
+        // creates based on the rows and cols directly
+        explicit Matrix2d(std::size_t rows, std::size_t cols, const std::vector<T> &data);
         // creates an empty n x m matrix2d
         explicit Matrix2d(std::size_t rows, std::size_t cols);
         // creates an n x m matrix initialized with value
@@ -54,12 +59,20 @@ namespace algebra
         std::valarray<value_type> col(std::size_t c) const;
         // retrieve refernce to the data from col c of the matrix2d
         std::slice_array<value_type> col(std::size_t c);
+        // create a new array from data
+        std::valarray<value_type> array() const;
 
         // TODO: Support the view of matrix
 
         // genetate a new matrix2d that is the transposition of this one
+        value_type item() const;
         Matrix2d<value_type> transpose() const;
         Matrix2d<value_type> inverse() const;
+        Matrix2d<value_type> sum(std::size_t dim) const;
+        value_type sum() const;
+        Matrix2d<value_type> mean(std::size_t dim) const;
+        value_type mean() const;
+        Matrix2d<value_type> pow(value_type power) const;
 
         // define iterators
         inline auto begin()
@@ -117,29 +130,29 @@ namespace algebra
     // https://www.cppstories.com/2016/02/notes-on-c-sfinae/
 
     // ##: https://ithelp.ithome.com.tw/articles/10207697
-#define DEFINE_BINARY_OPERATOR(_Op)  \
-    template <typename T>   \
-    inline Matrix2d<T> operator _Op(const Matrix2d<T> &lhs, const Matrix2d<T> &rhs)    \
-    {   \
-        Matrix2d<T> result(lhs);    \
-        result _Op##= rhs;  \
-        return result;  \
-    }   \
-        \
-    template <typename T>   \
-    inline Matrix2d<T> operator _Op(const typename Matrix2d<T>::value_type &lhs, const Matrix2d<T> &rhs)   \
-    {   \
-        Matrix2d<T> result(rhs);    \
-        result _Op##= lhs;  \
-        return result;  \
-    }   \
-        \
-    template <typename T>   \
-    inline Matrix2d<T> operator _Op(const Matrix2d<T> &lhs, const typename Matrix2d<T>::value_type &rhs)   \
-    {   \
-        Matrix2d<T> result(lhs);    \
-        result _Op##= rhs;  \
-        return result;  \
+#define DEFINE_BINARY_OPERATOR(_Op)                                                                      \
+    template <typename T>                                                                                \
+    inline Matrix2d<T> operator _Op(const Matrix2d<T> &lhs, const Matrix2d<T> &rhs)                      \
+    {                                                                                                    \
+        Matrix2d<T> result(lhs);                                                                         \
+        result _Op## = rhs;                                                                              \
+        return result;                                                                                   \
+    }                                                                                                    \
+                                                                                                         \
+    template <typename T>                                                                                \
+    inline Matrix2d<T> operator _Op(const typename Matrix2d<T>::value_type &lhs, const Matrix2d<T> &rhs) \
+    {                                                                                                    \
+        Matrix2d<T> result(rhs);                                                                         \
+        result _Op## = lhs;                                                                              \
+        return result;                                                                                   \
+    }                                                                                                    \
+                                                                                                         \
+    template <typename T>                                                                                \
+    inline Matrix2d<T> operator _Op(const Matrix2d<T> &lhs, const typename Matrix2d<T>::value_type &rhs) \
+    {                                                                                                    \
+        Matrix2d<T> result(lhs);                                                                         \
+        result _Op## = rhs;                                                                              \
+        return result;                                                                                   \
     }
 
     DEFINE_BINARY_OPERATOR(+)

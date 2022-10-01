@@ -2,8 +2,6 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
-#include <vector>
-#include <array>
 #include <string>
 
 #include <cctype>
@@ -13,9 +11,6 @@
 
 namespace utils
 {
-    using Vectord = std::vector<double>;
-    using Matrixd = std::vector<Vectord>;
-
     bool isNumber(char *arg);
 
     template <typename T>
@@ -23,9 +18,13 @@ namespace utils
 
     template <typename T>
     void printMatrix(std::ostream &os, const algebra::Matrix2d<T> &data);
+    template <typename T>
+    std::string describeLine(const algebra::Matrix2d<T> &params, bool gnuplot);
 
-    Matrixd getData(const std::string path);
-    Matrixd generateDesignMatrix(const Matrixd &points, const std::size_t numberOfBases);
+    template <typename T>
+    void plotLineAndPoints(std::string, const algebra::Matrix2d<T> &params, const algebra::Matrix2d<T> &points);
+
+    algebra::Matrix2d<double> getData(const std::string path);
 }
 
 #endif // UTILS_H_

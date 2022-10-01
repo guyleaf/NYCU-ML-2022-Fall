@@ -1,20 +1,44 @@
-﻿#include "algebra/algebra.hpp"
-#include "utils.h"
-
-#include <iostream>
-
+﻿#include <iostream>
 #include <string>
 #include <stdexcept>
+
+#include <cmath>
 #include <cstddef>
 
-utils::Vectord fitPointsByrLSE(utils::Matrixd points, int numberOfBases, double lambda)
+#include "algebra/algebra.hpp"
+#include "utils.h"
+
+algebra::Matrix2d<double> generateDesignMatrix(const algebra::Matrix2d<double> &points, const std::size_t numberOfBases)
 {
-    return {};
+    std::size_t n = points.rows();
+    algebra::Matrix2d<double> matrix(n, numberOfBases);
+    std::valarray<double> pointXColumn = points.col(0);
+    for (std::size_t i = 0; i < n; i++)
+    {
+        double pointX = pointXColumn[i];
+        for (std::size_t power = 0; power < numberOfBases; power++)
+        {
+            matrix(i, power) = std::pow(pointX, power);
+        }
+    }
+    return matrix;
 }
 
-utils::Vectord fitPointsByNewtonMethodWithLSE(utils::Matrixd points, int numberOfBases)
+algebra::Matrix2d<double> fitPointsByrLSE(const algebra::Matrix2d<double> &a, const algebra::Matrix2d<double> &b, double lambda)
 {
-    return {};
+    auto transposedA = a.transpose();
+    return (transposedA * a + algebra::eye<double>(a.cols(), lambda)).inverse() * transposedA * b;
+}
+
+algebra::Matrix2d<double> fitPointsByNewtonMethodWithLSE(const algebra::Matrix2d<double> &a, const algebra::Matrix2d<double> &b)
+{
+    auto transposedA = a.transpose();
+    return (transposedA * a).inverse() * transposedA * b;
+}
+
+double calculateLSE(const algebra::Matrix2d<double> &a, const algebra::Matrix2d<double> &b, const algebra::Matrix2d<double> &w)
+{
+    return (a * w - b).pow(2).sum();
 }
 
 int main(int argc, char *argv[])
@@ -32,31 +56,29 @@ int main(int argc, char *argv[])
         throw std::invalid_argument("The arguments lambda (LSE) must be a number.");
     }
 
+    std::cout.precision(10);
+
     std::string filePath(argv[1]);
-    auto numberOfbases = utils::strto<std::size_t>(argv[2]);
+    auto bases = utils::strto<std::size_t>(argv[2]);
     auto lambda = utils::strto<double>(argv[3]);
 
     auto points = utils::getData(filePath);
+    auto a = generateDesignMatrix(points, bases);
+    auto b = algebra::Matrix2d<double>(points.rows(), 1, points.col(1));
 
-    algebra::Matrix2d<double> a(4, 5, 0.2), b(4, 5, 0.1);
+    auto weights = fitPointsByrLSE(a, b, lambda);
+    std::cout << "LSE:" << std::endl;
+    std::cout << "Fitting line: " << utils::describeLine(weights, false) << std::endl;
+    std::cout << "Total Error: " << std::fixed << calculateLSE(a, b, weights) << std::endl;
+    utils::plotLineAndPoints("rLSE (bases=" + std::to_string(bases) + ", lambda=" + std::to_string(lambda) + ")", weights, points);
 
-    a *= b.transpose();
+    std::cout << std::endl;
 
-    algebra::Matrix2d<double> c(3, 3, {
-        -2, 2, -1,
-        6, -6, 7,
-        3, -8, 4
-    });
-    auto i = algebra::eye<double>(3);
-    auto j = algebra::eye<double>(5);
+    weights = fitPointsByNewtonMethodWithLSE(a, b);
+    std::cout << "Newton's Method:" << std::endl;
+    std::cout << "Fitting line: " << utils::describeLine(weights, false) << std::endl;
+    std::cout << "Total Error: " << std::fixed << calculateLSE(a, b, weights) << std::endl;
+    utils::plotLineAndPoints("Newton-Raphson method (bases=" + std::to_string(bases) + ")", weights, points);
 
-    std::cout << (i != j) << std::endl;
-    utils::printMatrix(std::cout, i);
-    utils::printMatrix(std::cout, c + i);
-    utils::printMatrix(std::cout, c + 1);
-    utils::printMatrix(std::cout, c - 1);
-    utils::printMatrix(std::cout, c * 2);
-    utils::printMatrix(std::cout, c / 2);
-    utils::printMatrix(std::cout, c * c.inverse());
     return 0;
 }

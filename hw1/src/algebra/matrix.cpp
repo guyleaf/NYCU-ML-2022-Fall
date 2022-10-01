@@ -16,6 +16,7 @@ namespace algebra
     const std::string NOT_SAME_SIZE_MSG = "The size of two matrices are not equal.";
     const std::string NOT_MULTIPLIABLE_MSG = "The size of cols of the first matrix is not equal to the size of rows of the second matrix.";
     const std::string NOT_SQUARE_MSG = "The matrix is not a square matrix.";
+    const std::string NOT_ONLY_ONE_VALUE_MSG = "The matrix contains more than one value.";
 
     // define constructors
     template <typename T>
@@ -29,6 +30,24 @@ namespace algebra
 
     template <typename T>
     Matrix2d<T>::Matrix2d(std::size_t rows, std::size_t cols, const std::valarray<T> &data) : _rows(rows), _cols(cols), _data(data)
+    {
+        if ((_rows * _cols) != _data.size())
+        {
+            throw std::runtime_error(INVALID_SIZE_MSG);
+        }
+    }
+
+    template <typename T>
+    Matrix2d<T>::Matrix2d(std::size_t rows, const std::vector<T> &data) : _rows(rows), _cols(data.size() / rows), _data(data.data(), data.size())
+    {
+        if ((_rows * _cols) != _data.size())
+        {
+            throw std::runtime_error(NOT_DIVISIBLE_SIZE_MSG);
+        }
+    }
+
+    template <typename T>
+    Matrix2d<T>::Matrix2d(std::size_t rows, std::size_t cols, const std::vector<T> &data) : _rows(rows), _cols(cols), _data(data.data(), data.size())
     {
         if ((_rows * _cols) != _data.size())
         {
@@ -58,25 +77,62 @@ namespace algebra
     template <typename T>
     std::valarray<T> Matrix2d<T>::row(std::size_t r) const
     {
+        if (r >= this->_rows)
+        {
+            throw std::out_of_range("");
+        }
+
         return this->_data[std::slice(r * this->_cols, this->_cols, 1)];
     }
 
     template <typename T>
     std::slice_array<T> Matrix2d<T>::row(std::size_t r)
     {
+        if (r >= this->_rows)
+        {
+            throw std::out_of_range("");
+        }
+
         return this->_data[std::slice(r * this->_cols, this->_cols, 1)];
     }
 
     template <typename T>
     std::valarray<T> Matrix2d<T>::col(std::size_t c) const
     {
+        if (c >= this->_cols)
+        {
+            throw std::out_of_range("");
+        }
+
         return this->_data[std::slice(c, this->_rows, this->_cols)];
     }
 
     template <typename T>
     std::slice_array<T> Matrix2d<T>::col(std::size_t c)
     {
+        if (c >= this->_cols)
+        {
+            throw std::out_of_range("");
+        }
+
         return this->_data[std::slice(c, this->_rows, this->_cols)];
+    }
+
+    template <typename T>
+    std::valarray<T> Matrix2d<T>::array() const
+    {
+        return this->_data;
+    }
+
+    template <typename T>
+    T Matrix2d<T>::item() const
+    {
+        if (this->_rows != 1 || this->_cols != 1)
+        {
+            throw std::runtime_error(NOT_ONLY_ONE_VALUE_MSG);
+        }
+
+        return this->_data[0];
     }
 
     template <typename T>
@@ -159,16 +215,44 @@ namespace algebra
         return b;
     }
 
+    template <typename T>
+    T Matrix2d<T>::sum() const
+    {
+        return this->_data.sum();
+    }
+
+    template <typename T>
+    T Matrix2d<T>::mean() const
+    {
+        return this->_data.sum() / this->_data.size();
+    }
+
+    template <typename T>
+    Matrix2d<T> Matrix2d<T>::pow(T power) const
+    {
+        return Matrix2d<T>(this->_rows, this->_cols, std::pow(this->_data, power));
+    }
+
     // define operators
     template <typename T>
     const T &Matrix2d<T>::operator()(std::size_t r, std::size_t c) const
     {
+        if (r >= this->_rows || c >= this->_cols)
+        {
+            throw std::out_of_range("");
+        }
+
         return this->_data[r * this->_cols + c];
     }
 
     template <typename T>
     T &Matrix2d<T>::operator()(std::size_t r, std::size_t c)
     {
+        if (r >= this->_rows || c >= this->_cols)
+        {
+            throw std::out_of_range("");
+        }
+
         return this->_data[r * this->_cols + c];
     }
 

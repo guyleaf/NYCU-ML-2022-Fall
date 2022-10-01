@@ -11,8 +11,8 @@
             "program": "${cwd}/main.out",
             "args": [
                 "${cwd}/sample.txt",
-                "3",
-                "0.001"
+                "1",
+                "0"
             ],
             "stopAtEntry": false,
             "cwd": ".",
@@ -20,6 +20,10 @@
                 {
                     "name": "ASAN_OPTIONS",
                     "value": "detect_leaks=0"
+                },
+                {
+                    "name": "DISPLAY",
+                    "value": "172.31.64.1:61.0"
                 }
             ],
             "externalConsole": false,
