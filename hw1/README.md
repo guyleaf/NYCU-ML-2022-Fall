@@ -11,8 +11,9 @@ This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
 3. boost library (only for visualization)
-4. gnuplot  
+4. [gnuplot](http://www.gnuplot.info/)  
 `gnuplot 5.2 patchlevel 8`
+5. [gnuplot-iostream](https://github.com/dstahlke/gnuplot-iostream)
 
 ## How to execute?
 ```bash
